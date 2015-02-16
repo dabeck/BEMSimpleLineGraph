@@ -309,6 +309,7 @@
 
 @optional
 
+- (UIView *)lineGraph:(BEMSimpleLineGraphView *)graph viewForPopupAtIndex:(NSInteger)index;
 
 //------- X AXIS -------//
 

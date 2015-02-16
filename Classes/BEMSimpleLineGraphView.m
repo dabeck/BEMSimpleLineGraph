@@ -407,7 +407,9 @@ typedef NS_ENUM(NSInteger, BEMInternalTags)
                     if ([self.delegate lineGraph:self alwaysDisplayPopUpAtIndex:i] == YES) {
                         [self displayPermanentLabelForPoint:circleDot];
                     }
-                } else [self displayPermanentLabelForPoint:circleDot];
+				} else if ([self.dataSource respondsToSelector:@selector(lineGraph:viewForPopupAtIndex:)]) {
+					[self displayPermanentLabelForPoint:circleDot atIndex:i];
+				} else [self displayPermanentLabelForPoint:circleDot];
             }
             
             // Dot entrance animation
@@ -762,6 +764,48 @@ typedef NS_ENUM(NSInteger, BEMInternalTags)
     }
     
     return offset;
+}
+
+- (void)displayPermanentLabelForPoint:(BEMCircle *)circleDot atIndex:(NSInteger)index {
+	self.enablePopUpReport = NO;
+	self.xCenterLabel = circleDot.center.x;
+
+	UIView *popup = [self.dataSource lineGraph:self viewForPopupAtIndex:index];
+	
+	popup.center = CGPointMake(self.xCenterLabel, circleDot.center.y - circleDot.frame.size.height/2 - 20);
+	popup.alpha = 0;
+	BEMPermanentPopupView *permanentPopUpView = [[BEMPermanentPopupView alloc] initWithFrame:CGRectMake(0, 0, popup.frame.size.width + 7, popup.frame.size.height + 2)];
+	
+	permanentPopUpView.backgroundColor = [UIColor whiteColor];
+	permanentPopUpView.alpha = 0;
+	permanentPopUpView.layer.cornerRadius = 3;
+	permanentPopUpView.tag = PermanentPopUpViewTag3100;
+	permanentPopUpView.center = popup.center;
+	
+	if (popup.frame.origin.x <= 0) {
+		self.xCenterLabel = popup.frame.size.width/2 + 4;
+		popup.center = CGPointMake(self.xCenterLabel, circleDot.center.y - circleDot.frame.size.height/2 - 20);
+	} else if (self.enableYAxisLabel == YES && popup.frame.origin.x <= self.YAxisLabelXOffset) {
+		self.xCenterLabel = popup.frame.size.width/2 + 4;
+		popup.center = CGPointMake(self.xCenterLabel + self.YAxisLabelXOffset, circleDot.center.y - circleDot.frame.size.height/2 - 20);
+	} else if ((popup.frame.origin.x + popup.frame.size.width) >= self.frame.size.width) {
+		self.xCenterLabel = self.frame.size.width - popup.frame.size.width/2 - 4;
+		popup.center = CGPointMake(self.xCenterLabel, circleDot.center.y - circleDot.frame.size.height/2 - 20);
+	}
+	
+	if (popup.frame.origin.y <= 2) {
+		popup.center = CGPointMake(self.xCenterLabel, circleDot.center.y + circleDot.frame.size.height/2 + 20);
+	}
+	
+	[self addSubview:popup];
+	
+	if (self.animationGraphEntranceTime == 0) {
+		popup.alpha = 1;
+	} else {
+		[UIView animateWithDuration:0.5 delay:self.animationGraphEntranceTime options:UIViewAnimationOptionCurveLinear animations:^{
+			popup.alpha = 1;
+		} completion:nil];
+	}
 }
 
 - (void)displayPermanentLabelForPoint:(BEMCircle *)circleDot {
