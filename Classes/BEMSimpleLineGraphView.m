@@ -774,14 +774,7 @@ typedef NS_ENUM(NSInteger, BEMInternalTags)
 	
 	popup.center = CGPointMake(self.xCenterLabel, circleDot.center.y - circleDot.frame.size.height/2 - 20);
 	popup.alpha = 0;
-	BEMPermanentPopupView *permanentPopUpView = [[BEMPermanentPopupView alloc] initWithFrame:CGRectMake(0, 0, popup.frame.size.width + 7, popup.frame.size.height + 2)];
-	
-	permanentPopUpView.backgroundColor = [UIColor whiteColor];
-	permanentPopUpView.alpha = 0;
-	permanentPopUpView.layer.cornerRadius = 3;
-	permanentPopUpView.tag = PermanentPopUpViewTag3100;
-	permanentPopUpView.center = popup.center;
-	
+
 	if (popup.frame.origin.x <= 0) {
 		self.xCenterLabel = popup.frame.size.width/2 + 4;
 		popup.center = CGPointMake(self.xCenterLabel, circleDot.center.y - circleDot.frame.size.height/2 - 20);
